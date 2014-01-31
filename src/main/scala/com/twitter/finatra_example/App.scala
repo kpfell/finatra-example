@@ -13,8 +13,14 @@ object App extends FinatraServer {
      *
      * curl http://localhost:7070/ => "hello world"
      */
+
+    class AnView extends View {
+      val template = "index.mustache"
+    }
+
     get("/") { request =>
-      render.plain("hello world").toFuture
+      val anView = new AnView
+      render.view(anView).toFuture
     }
 
     delete("/photos") { request =>
