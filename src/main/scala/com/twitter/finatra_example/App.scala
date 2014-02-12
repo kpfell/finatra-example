@@ -12,12 +12,12 @@ object App extends FinatraServer {
 
     class Posts(tag: Tag) extends Table[(Int, String, String, Timestamp, Timestamp)](tag, "POSTS") {
       def id: Column[Int] = column[Int]("POST_ID") 
-      def name: Column[String] = column[String]("POST_TITLE")
+      def title: Column[String] = column[String]("POST_TITLE")
       def body: Column[String] = column[String]("BODY")
       def created_at: Column[Timestamp] = column[Timestamp]("CREATED_AT")
       def updated_at: Column[Timestamp] = column[Timestamp]("UPDATED_AT")
       // Every table needs a * projection with the same type as the table's type parameter
-      def * = (id, name, body, created_at, updated_at)
+      def * = (id, title, body, created_at, updated_at)
     }
     val posts = TableQuery[Posts]
 
@@ -27,9 +27,15 @@ object App extends FinatraServer {
       // Create the schema 
       (posts.ddl).create
 
+      // Insert some posts
+      posts += (101, "How I Met Your Mother", "Well it all started when...", Timestamp.valueOf("2013-01-01 18:48:05.123456"), Timestamp.valueOf("2013-01-01 18:48:05.123456"))
+      posts += ( 49, "30 Rock", "Good God Lemon!", Timestamp.valueOf("2013-01-02 18:48:05.123456"), Timestamp.valueOf("2013-01-02 18:48:05.123456"))
+      posts += (150, "Arrested Development", "The story of a wealthy family",  Timestamp.valueOf("2013-01-03 18:48:05.123456"), Timestamp.valueOf("2013-01-03 18:48:05.123456"))
+
+      val q1 = posts.sortBy(_.created_at).list
+      q1.foreach(e => println(e))
+
       class IndexView extends View {
-        val posts = Post.order("created_at DESC")
-        val title = "Welcome."
         val template = "index.mustache"
       }
 
